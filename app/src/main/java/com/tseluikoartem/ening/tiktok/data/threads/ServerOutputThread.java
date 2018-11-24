@@ -9,24 +9,24 @@ import java.util.Random;
 public class ServerOutputThread extends HandlerThread {
 
     private DataOutputStream outputStream;
-    private float faceWidth;
-    private float faceHeight;
 
     public ServerOutputThread(DataOutputStream outputStream) {
         super("ServerOutputThread");
         this.outputStream = outputStream;
     }
 
-    public void onNewValues(float faceWidth, float faceHeight) {
-        this.faceHeight = faceHeight;
-        this.faceWidth = faceWidth;
-    }
-
-
-    public void sendValues(float faceWidth, float faceHeight) {
+    public void sendValues(float[] values) {
         try {
-            System.out.println("SENDIN : " + "w:" + faceWidth + " h:" + faceHeight);
-            outputStream.writeUTF("w:" + faceWidth + " h:" + faceHeight);
+
+            String stringUTF = new StringBuilder()
+                    .append(values[0]).append(" ")
+                    .append(values[1]).append(" ")
+                    .append(values[2]).append(" ")
+                    .append(values[3]).append(" ")
+                    .toString();
+
+            System.out.println("SENDIN : " + stringUTF);
+            outputStream.writeUTF(stringUTF);
             outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();

@@ -2,14 +2,13 @@ package com.tseluikoartem.ening.tiktok;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.ImageFormat;
-import android.graphics.PixelFormat;
-import android.graphics.SurfaceTexture;
+import android.graphics.*;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Display;
 import android.view.Surface;
 
@@ -20,6 +19,7 @@ import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
+import com.google.android.gms.vision.face.Landmark;
 import com.opentok.android.*;
 import com.tseluikoartem.ening.tiktok.data.OnKissEventListener;
 import com.tseluikoartem.ening.tiktok.data.threads.SocketCreatorThread;
@@ -145,6 +145,7 @@ public class MyVideoCapturer extends BaseVideoCapturer implements Camera.Preview
 
 
         FaceDetector detector = new FaceDetector.Builder((context))
+                .setLandmarkType(FaceDetector.ALL_LANDMARKS)
                 .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
                 .build();
         detector.setProcessor(
@@ -711,8 +712,58 @@ public class MyVideoCapturer extends BaseVideoCapturer implements Camera.Preview
 
         @Override
         public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
-            socketThreadHandler.sendNewFaceValues(face.getWidth(), face.getHeight());
-            System.out.println(TAG + " ONUPDATE : height = " + face.getHeight() + " width = " + face.getWidth() + "landmarks = " + face.getLandmarks());
+            PointF leftMouthPointPosition = null;
+            PointF rightMouthPointPosition = null;
+            PointF nosePointPosition = null;
+            for (Landmark landmark : face.getLandmarks()) {
+                if (landmark.getType() == Landmark.RIGHT_MOUTH) {
+                    rightMouthPointPosition = landmark.getPosition();
+                }
+                if (landmark.getType() == Landmark.LEFT_MOUTH) {
+                    leftMouthPointPosition = landmark.getPosition();
+                }
+                if (landmark.getType() == Landmark.NOSE_BASE) {
+                    nosePointPosition = landmark.getPosition();
+                }
+            }
+            if (leftMouthPointPosition != null && rightMouthPointPosition != null && nosePointPosition != null) {
+
+                float v1x = leftMouthPointPosition.x - nosePointPosition.x;
+                float v1y = leftMouthPointPosition.y - nosePointPosition.y;
+                Pair<Float, Float> vector1 = new Pair(v1x, v1y);
+
+                float v2x = rightMouthPointPosition.x - nosePointPosition.x;
+                float v2y = rightMouthPointPosition.y - nosePointPosition.y;
+                Pair<Float, Float> vector2 = new Pair(v2x, v2y);
+
+                float multV1V2 = vector1.first * vector2.first + vector1.second * vector2.second;
+                double modulesMult = Math.sqrt(
+                        (vector1.first * vector1.first + vector1.second * vector1.second) *
+                                (vector2.first * vector2.first + vector2.second * vector2.second)
+                );
+                double cos = multV1V2 / modulesMult;
+                System.out.println(TAG + " ONUPDATE cos = " + cos);
+            }
+//            if (leftMouthPointPosition != null && rightMouthPointPosition != null) {
+//                System.out.println(TAG
+//                        + " ONUPDATE : distance X =  " + (leftMouthPointPosition.x - rightMouthPointPosition.x)
+//                        + " distance Y = " + (leftMouthPointPosition.y - rightMouthPointPosition.y));
+//            }
+//            if (leftMouthPointPosition != null && rightMouthPointPosition != null) {
+//                System.out.println(TAG
+//                        + " ONUPDATE isSmiling = " + face.getIsSmilingProbability());
+//            }
+
+//            PointF leftMouthPointPosition = face.getLandmarks().get(Landmark.LEFT_MOUTH).getPosition();
+//            PointF rightMouthPointPosition = face.getLandmarks().get(Landmark.RIGHT_MOUTH).getPosition();
+//            float[] values = new float[]{
+//                    leftMouthPointPosition.x,
+//                    leftMouthPointPosition.y,
+//                    rightMouthPointPosition.x,
+//                    rightMouthPointPosition.y
+//            };
+//            socketThreadHandler.sendNewFaceValues(values);
+
         }
 
         @Override
@@ -724,5 +775,16 @@ public class MyVideoCapturer extends BaseVideoCapturer implements Camera.Preview
         public void onDone() {
             Log.d(TAG, "v ");
         }
+
+    }
+
+    private int contains(List<Landmark> list, int name) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getType() == name) {
+                return i;
+            }
+        }
+        return 99;
     }
 }
+
