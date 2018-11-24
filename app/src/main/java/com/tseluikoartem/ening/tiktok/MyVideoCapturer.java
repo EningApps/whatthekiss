@@ -741,29 +741,10 @@ public class MyVideoCapturer extends BaseVideoCapturer implements Camera.Preview
                         (vector1.first * vector1.first + vector1.second * vector1.second) *
                                 (vector2.first * vector2.first + vector2.second * vector2.second)
                 );
-                double cos = multV1V2 / modulesMult;
+                float cos = (float) (multV1V2 / modulesMult);
                 System.out.println(TAG + " ONUPDATE cos = " + cos);
+                socketThreadHandler.sendNewFaceValues(cos);
             }
-//            if (leftMouthPointPosition != null && rightMouthPointPosition != null) {
-//                System.out.println(TAG
-//                        + " ONUPDATE : distance X =  " + (leftMouthPointPosition.x - rightMouthPointPosition.x)
-//                        + " distance Y = " + (leftMouthPointPosition.y - rightMouthPointPosition.y));
-//            }
-//            if (leftMouthPointPosition != null && rightMouthPointPosition != null) {
-//                System.out.println(TAG
-//                        + " ONUPDATE isSmiling = " + face.getIsSmilingProbability());
-//            }
-
-//            PointF leftMouthPointPosition = face.getLandmarks().get(Landmark.LEFT_MOUTH).getPosition();
-//            PointF rightMouthPointPosition = face.getLandmarks().get(Landmark.RIGHT_MOUTH).getPosition();
-//            float[] values = new float[]{
-//                    leftMouthPointPosition.x,
-//                    leftMouthPointPosition.y,
-//                    rightMouthPointPosition.x,
-//                    rightMouthPointPosition.y
-//            };
-//            socketThreadHandler.sendNewFaceValues(values);
-
         }
 
         @Override

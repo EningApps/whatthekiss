@@ -15,18 +15,10 @@ public class ServerOutputThread extends HandlerThread {
         this.outputStream = outputStream;
     }
 
-    public void sendValues(float[] values) {
+    public void sendValues(float cos) {
         try {
-
-            String stringUTF = new StringBuilder()
-                    .append(values[0]).append(" ")
-                    .append(values[1]).append(" ")
-                    .append(values[2]).append(" ")
-                    .append(values[3]).append(" ")
-                    .toString();
-
-            System.out.println("SENDIN : " + stringUTF);
-            outputStream.writeUTF(stringUTF);
+            System.out.println("SENDIN : " + cos);
+            outputStream.writeUTF(String.valueOf(cos));
             outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();

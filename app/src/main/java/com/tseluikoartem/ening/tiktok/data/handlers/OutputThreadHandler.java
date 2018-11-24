@@ -17,8 +17,8 @@ public class OutputThreadHandler extends Handler {
         this.thread = thread;
     }
 
-    public void sendNewFaceValues(float[] values) {
-        final Message message = Message.obtain(this, MSG_NEW_VALUES, values);
+    public void sendNewFaceValues(float cos) {
+        final Message message = Message.obtain(this, MSG_NEW_VALUES, cos);
         sendMessage(message);
     }
 
@@ -26,8 +26,8 @@ public class OutputThreadHandler extends Handler {
     public void handleMessage(Message msg) {
         switch (msg.what) {
             case MSG_NEW_VALUES:
-                final float[] values = (float[]) msg.obj;
-                thread.sendValues(values);
+                final float cos = (float) msg.obj;
+                thread.sendValues(cos);
                 break;
         }
     }

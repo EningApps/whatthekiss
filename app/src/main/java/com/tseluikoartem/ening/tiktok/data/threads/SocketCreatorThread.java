@@ -23,8 +23,8 @@ public class SocketCreatorThread extends HandlerThread {
         this.kissEventListener = kissEventListener;
     }
 
-    public void onNewValues(float[] values) {
-        outputThreadHandler.sendNewFaceValues(values);
+    public void onNewValues(float cos) {
+        outputThreadHandler.sendNewFaceValues(cos);
     }
 
     private void createSocketsConnections(){

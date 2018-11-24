@@ -1,5 +1,8 @@
 package com.tseluikoartem.ening.tiktok;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.annotation.SuppressLint;
 import android.opengl.GLSurfaceView;
 import android.support.v7.app.AppCompatActivity;
@@ -7,9 +10,11 @@ import android.support.annotation.NonNull;
 import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +68,7 @@ public class MainActivity extends AppCompatActivity
 
     private TextView faceValuesTextView;
     private TextView faceAccelerationTextView;
+    private ImageView imageView;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -76,6 +82,7 @@ public class MainActivity extends AppCompatActivity
         // initialize view objects from your layout
         mPublisherViewContainer = (FrameLayout) findViewById(R.id.publisher_container);
         mSubscriberViewContainer = (FrameLayout) findViewById(R.id.subscriber_container);
+        imageView = findViewById(R.id.imageView);
 
         faceValuesTextView = findViewById(R.id.faceValues);
         faceAccelerationTextView = findViewById(R.id.faceAcceleration);
@@ -316,8 +323,50 @@ public class MainActivity extends AppCompatActivity
                 .show();
     }
 
+    boolean isAnimating = false;
+    long prevTime = 0;
+
     @Override
     public void onKissEvent() {
+        long currentTime = System.currentTimeMillis();
+        long deltaTime = currentTime - prevTime;
+        if (deltaTime > 10000 || prevTime == 0) {
+            prevTime = currentTime;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    isAnimating = true;
+                    imageView.setVisibility(View.VISIBLE);
+                    ObjectAnimator scaleDown = ObjectAnimator.ofPropertyValuesHolder(
+                            imageView,
+                            PropertyValuesHolder.ofFloat("scaleX", 1.2f),
+                            PropertyValuesHolder.ofFloat("scaleY", 1.2f));
+                    scaleDown.setDuration(310);
+                    scaleDown.setRepeatMode(ObjectAnimator.REVERSE);
+                    scaleDown.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
 
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            imageView.setVisibility(View.INVISIBLE);
+                            isAnimating = false;
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            isAnimating = false;
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+                        }
+                    });
+                    scaleDown.start();
+                }
+            });
+        }
     }
 }
