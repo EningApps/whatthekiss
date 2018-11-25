@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity
 
     private TextView faceValuesTextView;
     private TextView faceAccelerationTextView;
-    private ImageView imageView;
+    private LottieAnimationView lottieAnimationView;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity
         // initialize view objects from your layout
         mPublisherViewContainer = (FrameLayout) findViewById(R.id.publisher_container);
         mSubscriberViewContainer = (FrameLayout) findViewById(R.id.subscriber_container);
-        imageView = findViewById(R.id.imageView);
+        lottieAnimationView = findViewById(R.id.lottieAnimView);
 
         faceValuesTextView = findViewById(R.id.faceValues);
         faceAccelerationTextView = findViewById(R.id.faceAcceleration);
@@ -348,16 +349,9 @@ public class MainActivity extends AppCompatActivity
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    isAnimating = true;
-                    imageView.setVisibility(View.VISIBLE);
-                    ObjectAnimator scaleDown = ObjectAnimator.ofPropertyValuesHolder(
-                            imageView,
-                            PropertyValuesHolder.ofFloat("scaleX", 1.2f),
-                            PropertyValuesHolder.ofFloat("scaleY", 1.2f));
-                    scaleDown.setDuration(500);
-                    scaleDown.setRepeatCount(6);
-                    scaleDown.setRepeatMode(ObjectAnimator.REVERSE);
-                    scaleDown.addListener(new Animator.AnimatorListener() {
+                    lottieAnimationView.setVisibility(View.VISIBLE);
+                    lottieAnimationView.playAnimation();
+                    lottieAnimationView.addAnimatorListener(new Animator.AnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animation) {
 
@@ -365,18 +359,19 @@ public class MainActivity extends AppCompatActivity
 
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            imageView.setVisibility(View.INVISIBLE);
+                            lottieAnimationView.setVisibility(View.INVISIBLE);
                         }
 
                         @Override
                         public void onAnimationCancel(Animator animation) {
+
                         }
 
                         @Override
                         public void onAnimationRepeat(Animator animation) {
+
                         }
                     });
-                    scaleDown.start();
                 }
             });
         }
