@@ -9,7 +9,7 @@ import com.tseluikoartem.ening.tiktok.data.threads.SocketCreatorThread;
 public class SocketThreadHandler extends Handler {
 
     public static final int MSG_NEW_VALUES = 1;
-    public static final int MSG_NEW_CONNECTION = 2;
+    public static final int MSG_SMILE_VALUES = 3;
 
     private SocketCreatorThread thread;
 
@@ -23,6 +23,11 @@ public class SocketThreadHandler extends Handler {
         sendMessage(message);
     }
 
+    public void sendSmileValues(float value) {
+        final Message message = Message.obtain(this, MSG_SMILE_VALUES, value);
+        sendMessage(message);
+    }
+
     public void sendCreateConnection() {
         post(thread.createSocketConenctionRunnable);
     }
@@ -33,6 +38,10 @@ public class SocketThreadHandler extends Handler {
             case MSG_NEW_VALUES:
                 final float cos = (float) msg.obj;
                 thread.onNewValues(cos);
+                break;
+            case MSG_SMILE_VALUES:
+                final float value = (float) msg.obj;
+                thread.onSmileValues(value);
                 break;
         }
     }

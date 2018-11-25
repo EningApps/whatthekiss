@@ -12,7 +12,9 @@ import android.util.Pair;
 import android.view.Display;
 import android.view.Surface;
 
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.MultiProcessor;
@@ -67,6 +69,7 @@ public class MyVideoCapturer extends BaseVideoCapturer implements Camera.Preview
 
     private SocketThreadHandler socketThreadHandler;
     private OnKissEventListener kissEventListener;
+    private Button kissButton;
 
     Runnable newFrame = new Runnable() {
         public void run() {
@@ -86,7 +89,7 @@ public class MyVideoCapturer extends BaseVideoCapturer implements Camera.Preview
         }
     };
 
-    public MyVideoCapturer(Context context, OnKissEventListener kissEventListener, Publisher.CameraCaptureResolution resolution, Publisher.CameraCaptureFrameRate fps) {
+    public MyVideoCapturer(Context context, OnKissEventListener kissEventListener, Button kissButton, Publisher.CameraCaptureResolution resolution, Publisher.CameraCaptureFrameRate fps) {
         this.cameraIndex = getCameraIndexUsingFront(true);
         WindowManager windowManager = (WindowManager) context.getSystemService("window");
         this.currentDisplay = windowManager.getDefaultDisplay();
@@ -94,6 +97,7 @@ public class MyVideoCapturer extends BaseVideoCapturer implements Camera.Preview
         this.preferredResolution = resolution;
         this.context = context;
         this.kissEventListener = kissEventListener;
+        this.kissButton = kissButton;
     }
 
     public synchronized void init() {
@@ -164,6 +168,14 @@ public class MyVideoCapturer extends BaseVideoCapturer implements Camera.Preview
         socketCreatorThread.start();
         socketThreadHandler = new SocketThreadHandler(socketCreatorThread);
         socketThreadHandler.sendCreateConnection();
+        kissButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        socketThreadHandler.sendSmileValues(1000f);
+                    }
+                }
+        );
     }
 
     public synchronized int startCapture() {
@@ -742,9 +754,9 @@ public class MyVideoCapturer extends BaseVideoCapturer implements Camera.Preview
                                 (vector2.first * vector2.first + vector2.second * vector2.second)
                 );
                 float cos = (float) (multV1V2 / modulesMult);
-                System.out.println(TAG + " ONUPDATE cos = " + cos);
                 socketThreadHandler.sendNewFaceValues(cos);
             }
+
         }
 
         @Override

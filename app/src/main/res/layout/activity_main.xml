@@ -6,6 +6,15 @@
                                              android:layout_height="match_parent"
                                              tools:context=".MainActivity">
 
+    <Button
+            android:text="kiss"
+            android:alpha="0"
+            android:layout_width="116dp"
+            android:layout_height="107dp" android:id="@+id/kissButton" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            app:layout_constraintHorizontal_bias="0.0" app:layout_constraintVertical_bias="1.0"/>
     <FrameLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">
@@ -13,7 +22,8 @@
         <FrameLayout
                 android:id="@+id/subscriber_container"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"/>
+                android:layout_height="fill_parent">
+        </FrameLayout>
 
         <FrameLayout
                 android:id="@+id/publisher_container"
@@ -48,12 +58,12 @@
     <com.airbnb.lottie.LottieAnimationView
             android:visibility="invisible"
             android:id="@+id/lottieAnimView"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="348dp"
+            android:layout_height="494dp"
             app:lottie_fileName="kiss.json" android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent" android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="8dp"
             app:layout_constraintTop_toTopOf="parent" android:layout_marginStart="8dp"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintVertical_bias="0.898"/>
 
 </android.support.constraint.ConstraintLayout>

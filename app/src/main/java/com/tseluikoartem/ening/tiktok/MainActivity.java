@@ -1,8 +1,6 @@
 package com.tseluikoartem.ening.tiktok;
 
 import android.animation.Animator;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.annotation.SuppressLint;
 import android.opengl.GLSurfaceView;
 import android.support.v7.app.AppCompatActivity;
@@ -11,19 +9,11 @@ import android.Manifest;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.widget.*;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.google.android.gms.vision.CameraSource;
-import com.google.android.gms.vision.MultiProcessor;
-import com.google.android.gms.vision.Tracker;
-import com.google.android.gms.vision.face.Face;
-import com.google.android.gms.vision.face.FaceDetector;
 import com.opentok.android.Session;
 import com.opentok.android.Stream;
 import com.opentok.android.Publisher;
@@ -33,15 +23,12 @@ import com.opentok.android.BaseVideoRenderer;
 import com.opentok.android.OpentokError;
 import com.opentok.android.SubscriberKit;
 
-import java.io.IOException;
 import java.util.List;
 
 import com.tseluikoartem.ening.tiktok.data.OnKissEventListener;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
-
-import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 
 public class MainActivity extends AppCompatActivity
@@ -70,6 +57,7 @@ public class MainActivity extends AppCompatActivity
     private TextView faceValuesTextView;
     private TextView faceAccelerationTextView;
     private LottieAnimationView lottieAnimationView;
+    private Button kissButton;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -84,6 +72,7 @@ public class MainActivity extends AppCompatActivity
         mPublisherViewContainer = (FrameLayout) findViewById(R.id.publisher_container);
         mSubscriberViewContainer = (FrameLayout) findViewById(R.id.subscriber_container);
         lottieAnimationView = findViewById(R.id.lottieAnimView);
+        kissButton = findViewById(R.id.kissButton);
 
         faceValuesTextView = findViewById(R.id.faceValues);
         faceAccelerationTextView = findViewById(R.id.faceAcceleration);
@@ -206,7 +195,7 @@ public class MainActivity extends AppCompatActivity
 
         // initialize Publisher and set this object to listen to Publisher events
         Publisher.Builder builder = new Publisher.Builder(this);
-        builder.capturer(new MyVideoCapturer(this, this, Publisher.CameraCaptureResolution.MEDIUM, Publisher.CameraCaptureFrameRate.FPS_30));
+        builder.capturer(new MyVideoCapturer(this, this, kissButton, Publisher.CameraCaptureResolution.MEDIUM, Publisher.CameraCaptureFrameRate.FPS_30));
         mPublisher = builder.build();
         mPublisher.setPublisherListener(this);
 
@@ -327,20 +316,11 @@ public class MainActivity extends AppCompatActivity
     boolean isAnimating = false;
     long prevTime = 0;
 
-//    @Override
-//    public void onKissEvent() {
-//        long currentTime = System.currentTimeMillis();
-//        long deltaTime = currentTime - prevTime;
-//        if (deltaTime > 10000 || prevTime == 0) {
-//            prevTime = currentTime;
-
-//        }
-//    }
 
     private final static long TIME_TRASHHOLD = 5000; // miliseconds
 
     @Override
-    public void onKissEvent() {
+    public void onEvent(final EVENT_TYPE eventType) {
         long currentTime = System.currentTimeMillis();
         long deltaTime = currentTime - prevTime;
         if (prevTime == 0 || deltaTime > TIME_TRASHHOLD) {
@@ -349,6 +329,11 @@ public class MainActivity extends AppCompatActivity
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    if (eventType == EVENT_TYPE.KISS_EVENT) {
+                        lottieAnimationView.setAnimation("kiss.json");
+                    } else {
+                        lottieAnimationView.setAnimation("smile.json");
+                    }
                     lottieAnimationView.setVisibility(View.VISIBLE);
                     lottieAnimationView.playAnimation();
                     lottieAnimationView.addAnimatorListener(new Animator.AnimatorListener() {

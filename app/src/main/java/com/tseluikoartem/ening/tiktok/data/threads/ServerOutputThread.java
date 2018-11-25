@@ -15,10 +15,20 @@ public class ServerOutputThread extends HandlerThread {
         this.outputStream = outputStream;
     }
 
-    public void sendValues(float cos) {
+    public void sendFaceValues(float cos) {
         try {
             System.out.println("SENDIN : " + cos);
             outputStream.writeUTF(String.valueOf(cos));
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendSmileValues(float value) {
+        try {
+            System.out.println("SENDIN SMILE: " + value);
+            outputStream.writeUTF(String.valueOf(value));
             outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,7 +1,6 @@
 package com.tseluikoartem.ening.tiktok.data.threads;
 
 import android.os.HandlerThread;
-import com.tseluikoartem.ening.tiktok.data.KissEventMessageSender;
 import com.tseluikoartem.ening.tiktok.data.OnKissEventListener;
 import com.tseluikoartem.ening.tiktok.data.handlers.OutputThreadHandler;
 
@@ -25,6 +24,10 @@ public class SocketCreatorThread extends HandlerThread {
 
     public void onNewValues(float cos) {
         outputThreadHandler.sendNewFaceValues(cos);
+    }
+
+    public void onSmileValues(float value) {
+        outputThreadHandler.sendSmileValues(value);
     }
 
     private void createSocketsConnections(){

@@ -1,14 +1,10 @@
 package com.tseluikoartem.ening.tiktok.data.threads;
 
 import android.os.HandlerThread;
-import android.os.Message;
-import com.tseluikoartem.ening.tiktok.data.KissEventMessageSender;
 import com.tseluikoartem.ening.tiktok.data.OnKissEventListener;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Random;
 
 public class ServerReaderThread extends HandlerThread {
 
@@ -26,7 +22,11 @@ public class ServerReaderThread extends HandlerThread {
         try {
             while (true) {
                 String in = inputStream.readUTF();
-                kissEventListener.onKissEvent();
+                if (in.equals("KISS")) {
+                    kissEventListener.onEvent(OnKissEventListener.EVENT_TYPE.KISS_EVENT);
+                } else {
+                    kissEventListener.onEvent(OnKissEventListener.EVENT_TYPE.SMILE_EVENT);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
