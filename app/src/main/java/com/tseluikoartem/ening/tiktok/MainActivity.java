@@ -326,12 +326,25 @@ public class MainActivity extends AppCompatActivity
     boolean isAnimating = false;
     long prevTime = 0;
 
+//    @Override
+//    public void onKissEvent() {
+//        long currentTime = System.currentTimeMillis();
+//        long deltaTime = currentTime - prevTime;
+//        if (deltaTime > 10000 || prevTime == 0) {
+//            prevTime = currentTime;
+
+//        }
+//    }
+
+    private final static long TIME_TRASHHOLD = 5000; // miliseconds
+
     @Override
     public void onKissEvent() {
         long currentTime = System.currentTimeMillis();
         long deltaTime = currentTime - prevTime;
-        if (deltaTime > 10000 || prevTime == 0) {
+        if (prevTime == 0 || deltaTime > TIME_TRASHHOLD) {
             prevTime = currentTime;
+            System.out.println("TAAG delta time = " + deltaTime);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -341,7 +354,8 @@ public class MainActivity extends AppCompatActivity
                             imageView,
                             PropertyValuesHolder.ofFloat("scaleX", 1.2f),
                             PropertyValuesHolder.ofFloat("scaleY", 1.2f));
-                    scaleDown.setDuration(310);
+                    scaleDown.setDuration(500);
+                    scaleDown.setRepeatCount(6);
                     scaleDown.setRepeatMode(ObjectAnimator.REVERSE);
                     scaleDown.addListener(new Animator.AnimatorListener() {
                         @Override
@@ -352,12 +366,10 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             imageView.setVisibility(View.INVISIBLE);
-                            isAnimating = false;
                         }
 
                         @Override
                         public void onAnimationCancel(Animator animation) {
-                            isAnimating = false;
                         }
 
                         @Override
